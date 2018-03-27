@@ -1,11 +1,11 @@
 %This Matlab script can be used to generate all the figures in the article:
 %
-%Emil Bjornson, Jakob Hoydis, Luca Sanguinetti, ?Massive MIMO has Unlimited
-%Capacity,? IEEE Transactions on Wireless Communications, to appear.
+%Emil Bjornson, Jakob Hoydis, Luca Sanguinetti, "Massive MIMO has Unlimited
+%Capacity," IEEE Transactions on Wireless Communications, to appear.
 %
 %Download article: https://arxiv.org/pdf/1705.00538
 %
-%This is version 1.0 (Last edited: 2017-10-27)
+%This is version 1.1 (Last edited: 2018-03-27)
 %
 %License: This code is licensed under the GPLv2 license. If you in any way
 %use this code for research that results in publications, please cite our
@@ -25,7 +25,7 @@ clear;
 %Set simulation = 2 to generate Figure 5
 %Set simulation = 3 to generate Figure 6
 %Set simulation = 4 to generate Figure 7
-simulation = 4;
+simulation = 1;
 
 
 %Number of BSs in the area
@@ -58,7 +58,7 @@ if simulation == 1
     Mmax = max(Mrange);
     
     %Select number of channel realizations per setup
-    nbrOfChannelRealizations = 5000;
+    nbrOfChannelRealizations = 1000;
     
     %Standard deviation of large-scale fading variations over the array
     stdLSF = 0;
@@ -209,8 +209,10 @@ if simulation == 1 || simulation == 4
     meanSE_singlecell = zeros(nbrOfPoints,nbrOfSetups);
     
     powerlevelsTotal = zeros(4,3,nbrOfPoints,nbrOfSetups);
-    
-elseif simulation == 3 || simulation == 4
+
+end
+
+if simulation == 3 || simulation == 4
     
     meanSE_MR_EW = zeros(nbrOfPoints,nbrOfSetups);
     meanSE_SMMSE_EW = zeros(nbrOfPoints,nbrOfSetups);
@@ -218,6 +220,7 @@ elseif simulation == 3 || simulation == 4
     meanSE_MZF_EW = zeros(nbrOfPoints,nbrOfSetups);
     
 end
+
 
 
 %% Go through all setups
@@ -252,7 +255,7 @@ for s = 1:nbrOfSetups
             angleBSj = angle(UElocations(:,l)-BSlocations(j));
             
             %Compute distant-dependent path gains (in dB)
-            pathgaindB(:,l,j) = -constantTerm - alpha*10*log10(distancesBSj);
+            pathgaindB(:,l,j) = constantTerm - alpha*10*log10(distancesBSj);
             
             
             %Compute angles between UEs in cell l and BS j, and generate
@@ -448,10 +451,10 @@ elseif simulation == 3
     figure;
     hold on; box on;
     
-    plot(Mrange,meanSE_MMMSE,'rd-','LineWidth',1);
-    plot(Mrange,meanSE_MZF,'ko:','LineWidth',1);
-    plot(Mrange,meanSE_SMMSE,'k*--','LineWidth',1);
-    plot(Mrange,meanSE_MR,'bs-','LineWidth',1);
+    plot(Mrange,mean(meanSE_MMMSE,2),'rd-','LineWidth',1);
+    plot(Mrange,mean(meanSE_MZF,2),'ko:','LineWidth',1);
+    plot(Mrange,mean(meanSE_SMMSE,2),'k*--','LineWidth',1);
+    plot(Mrange,mean(meanSE_MR,2),'bs-','LineWidth',1);
     
     xlabel('Number of antennas (M)');
     ylabel('Spectral efficiency [bit/s/Hz/user]');
@@ -459,16 +462,17 @@ elseif simulation == 3
     legend('M-MMSE','M-ZF','S-MMSE','MR','Location','NorthWest');
     set(gca,'XScale','log');
     title('MMSE estimation');
+    ylim([0 5]);
     
     
     %Plot Figure 5b
     figure;
     hold on; box on;
     
-    plot(Mrange,meanSE_MMMSE_EW,'rd-','LineWidth',1);
-    plot(Mrange,meanSE_MZF_EW,'ko:','LineWidth',1);
-    plot(Mrange,meanSE_SMMSE_EW,'k*--','LineWidth',1);
-    plot(Mrange,meanSE_MR_EW,'bs-','LineWidth',1);
+    plot(Mrange,mean(meanSE_MMMSE_EW,2),'rd-','LineWidth',1);
+    plot(Mrange,mean(meanSE_MZF_EW,2),'ko:','LineWidth',1);
+    plot(Mrange,mean(meanSE_SMMSE_EW,2),'k*--','LineWidth',1);
+    plot(Mrange,mean(meanSE_MR_EW,2),'bs-','LineWidth',1);
     
     xlabel('Number of antennas (M)');
     ylabel('Spectral efficiency [bit/s/Hz/user]');
@@ -476,6 +480,7 @@ elseif simulation == 3
     legend('Approximate M-MMSE','M-ZF','Approximate S-MMSE','MRT','Location','NorthWest');
     set(gca,'XScale','log');
     title('EW-MMSE estimation');
+    ylim([0 5]);
     
     
 elseif simulation == 4
@@ -496,6 +501,7 @@ elseif simulation == 4
     legend('M-MMSE','M-ZF','S-MMSE','MRT','Location','NorthWest');
     set(gca,'XScale','log');
     title('MMSE estimation');
+    ylim([0 5]);
     
     
     %Plot Figure 7b
@@ -513,6 +519,7 @@ elseif simulation == 4
     legend('Approximate M-MMSE','M-ZF','Approximate S-MMSE','MRT','Location','NorthWest');
     set(gca,'XScale','log');
     title('EW-MMSE estimation');
+    ylim([0 5]);
     
 
 end
